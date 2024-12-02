@@ -13,8 +13,87 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model UserRole {
   id            Int   @id  @default(autoincrement())
-  firstName     String
-  lastName      String
+  Title         String
+  users         User[]
+  created_at      DateTime @default(now())      
+  updated_at      DateTime @updatedAt
 }
+
+model User {
+  id              Int   @id  @default(autoincrement())
+  firstName       String
+  lastName        String
+  username        String
+  password        String
+  phone           String
+  email           String  
+  role_id         Int
+  role            UserRole @relation(fields: [role_id], references: [id])
+  created_at      DateTime @default(now())      
+  updated_at      DateTime @updatedAt
+  
+}
+
+model ProductCategory {
+  id              Int   @id  @default(autoincrement())
+  title           String
+  subCategories   ProductSubCategory[] 
+  products        Product[]
+  created_at      DateTime @default(now())      
+  updated_at      DateTime @updatedAt
+}
+
+model ProductSubCategory {
+  id              Int   @id  @default(autoincrement())
+  title           String
+  category_id     Int
+  category        ProductCategory @relation(fields: [category_id], references: [id])
+  products        Product[]
+  created_at      DateTime @default(now())      
+  updated_at      DateTime @updatedAt
+}
+
+model Product {
+  id              Int   @id  @default(autoincrement())
+  Title           String 
+  category_id     Int
+  category        ProductCategory @relation(fields: [category_id], references: [id])
+  subcategory_id  Int
+  subcategory     ProductSubCategory @relation(fields: [subcategory_id], references: [id])
+  storeInOuts     StoreInOut[]
+  reels           Reel[]
+  created_at      DateTime @default(now())      
+  updated_at      DateTime @updatedAt
+}
+
+model Reel {
+  id              Int   @id  @default(autoincrement())
+  barcode         String
+  product_id      Int
+  product         Product @relation(fields: [product_id], references: [id])  
+  storeInOuts     StoreInOut[]
+  created_at      DateTime @default(now())      
+  updated_at      DateTime @updatedAt
+}
+
+model StoreInOut {
+  id              Int   @id  @default(autoincrement())
+  actionDate      DateTime @default(now())
+  product_id      Int
+  product         Product @relation(fields: [product_id], references: [id])
+  actionType      StoreActionType
+  amount          Float
+  reel_id         Int
+  reel            Reel @relation(fields: [reel_id], references: [id])
+  created_at      DateTime @default(now())      
+  updated_at      DateTime @updatedAt
+}
+
+enum StoreActionType {
+  INPUT
+  OUTPUT  
+}
+
+
